@@ -1,34 +1,60 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, HttpStatus, HttpException, UseGuards, Res, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Response } from 'express';
 import { DemoentityService } from './demoentity.service';
 import { CreateDemoentityDto } from './dto/create-demoentity.dto';
 import { UpdateDemoentityDto } from './dto/update-demoentity.dto';
 
+import { AuthGuard } from '@nestjs/passport';
+import { AuthUser } from 'src/auth/AuthUser';
+
 @Controller('demoentity')
+//@UseGuards(JwtAuthGuard)
 export class DemoentityController {
   constructor(private readonly demoentityService: DemoentityService) {}
 
+  currentUser() : AuthUser  {
+    return {
+      id: 0,
+      email: "",
+      roles: "",
+      permissions: ""
+    };
+  }
+
   @Post()
-  create(@Body() createDemoentityDto: CreateDemoentityDto) {
-    return this.demoentityService.create(createDemoentityDto);
+  // EXAMPLE OF ADDING VALIDATION PIPE RIGHT ON THE PARAMETER - but its simpler to set this globally
+  //async create(@Request() req, @Body(ValidationPipe) createDemoentityDto: CreateDemoentityDto) { 
+  // ALTERNATIVELY WE CAN DEFINE VALIDATION GROUPS:
+  //async create(@Request() req, @Body(ValidationPipe({ groups: ['validation_group_xyz'] })) createDemoentityDto: CreateDemoentityDto) { 
+  // WE CAN ALSO ADD VALIDATION PIPES WITH A DECORATOR:
+  //@UsePipes(ValidationPipe)
+  //async create(@Request() req, @Body(ValidationPipe) createDemoentityDto: CreateDemoentityDto) { 
+  async create(@Request() req, @Body() createDemoentityDto: CreateDemoentityDto) {
+    const rslt = await this.demoentityService.create(createDemoentityDto, this.currentUser());
+    return rslt;
   }
 
   @Get()
-  findAll() {
-    return this.demoentityService.findAll();
+  async findAll() {
+    const rslt = await this.demoentityService.findAll(this.currentUser(), null);
+    return rslt;
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.demoentityService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const rslt = await this.demoentityService.findOne(+id, this.currentUser());
+    return rslt;
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDemoentityDto: UpdateDemoentityDto) {
-    return this.demoentityService.update(+id, updateDemoentityDto);
+  async update(@Param('id') id: string, @Body() updateDemoentityDto: UpdateDemoentityDto) {
+    const rslt = await this.demoentityService.update(+id, updateDemoentityDto, this.currentUser());
+    return rslt;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.demoentityService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const rslt = await this.demoentityService.remove(+id, this.currentUser());
+    return rslt;
   }
 }

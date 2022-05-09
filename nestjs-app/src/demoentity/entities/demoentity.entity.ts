@@ -7,17 +7,17 @@ export class Demoentity {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column("bigint")
+    @Column("bigint", { nullable: true })
     field_bigint: string
 
-    @Column("int")
+    @Column("int", { nullable: true })
     field_int: number
 
     // // this is equivalent to "numeric" in postgres
     // @Column({ type: "decimal", precision: 25, scale: 5})
     // field_decimal: string
 
-    @Column({ type: "numeric", precision: 25, scale: 5})
+    @Column({ type: "numeric", precision: 25, scale: 5, nullable: true})
     field_decimal: string
 
     // @Column({ type: "text" })
@@ -26,8 +26,8 @@ export class Demoentity {
     @Column({ type: "varchar", length: 100 })
     field_varchar: string
 
-    @Column({ type: "bit"})
-    field_bit: boolean
+    @Column({ type: "boolean"})
+    field_boolean: boolean
 
     @Column({ type: "bytea"})
     field_bytea: string
@@ -57,6 +57,12 @@ export class Demoentity {
 
     // @Column({ type: "time without time zone"})
     // field_time: Date
+
+    @Column({type: "int"})
+    aud_create_user: Number;
+
+    @Column({type: "int"})
+    aud_update_user: Number;
 
     @CreateDateColumn()
     aud_create_date: Date;
