@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, HttpStatus, HttpException, UseGuards, Res, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Request, HttpStatus, HttpException, UseGuards, Res, ValidationPipe, UsePipes, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { DemoentityService } from './demoentity.service';
 import { CreateDemoentityDto } from './dto/create-demoentity.dto';
@@ -7,6 +7,7 @@ import { UpdateDemoentityDto } from './dto/update-demoentity.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from 'src/auth/AuthUser';
 import { Bunyan, ReqLogger } from 'nestjs-bunyan';
+import { PaginateOptions, RequestCriteria } from 'src/core/pagination';
 
 @Controller('demoentity')
 //@UseGuards(JwtAuthGuard)
@@ -37,9 +38,11 @@ export class DemoentityController {
   }
 
   @Get()
-  async findAll() {
-    this.logger.info("info controller");
-    const rslt = await this.demoentityService.findAll(this.currentUser(), null);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async findAll(@Query() filter: RequestCriteria) {
+    this.logger.info("info controller");    
+    filter.total = true;
+    const rslt = await this.demoentityService.findAll(this.currentUser(), filter as PaginateOptions, filter);
     return rslt;
   }
 

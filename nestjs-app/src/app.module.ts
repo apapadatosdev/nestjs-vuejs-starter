@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { DemoentityModule } from './demoentity/demoentity.module';
 import  {LoggingBunyan}  from '@google-cloud/logging-bunyan';
 import { LogLevel } from 'bunyan';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './core/http-exception-filter';
 
 
 @Module({
@@ -38,6 +40,12 @@ import { LogLevel } from 'bunyan';
     }),
     DemoentityModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    AppService
+  ],
 })
 export class AppModule {}

@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Demoentity } from './entities/demoentity.entity';
 import { AuthUser } from 'src/auth/AuthUser';
 import { Bunyan, InjectLogger } from 'nestjs-bunyan';
+import { paginate, PaginateOptions } from 'src/core/pagination';
 
 @Injectable()
 export class DemoentityService {
@@ -26,13 +27,16 @@ export class DemoentityService {
     });
     return rslt;    
   }
-
-  async findAll(user: AuthUser, criteria: object) {
+  
+  async findAll(user: AuthUser, paginateOptions: PaginateOptions, criteria: object) {
     this.logger.info("info service");
     let whereQ = {};    
     // //transform criteria on TypeORM equivalent filter expressions
     //whereQ["field_decimal"] = Between(0, 100);
-    const rslt = await this.repo.find(whereQ);
+    // // this is without pagination
+    //const rslt = await this.repo.find(whereQ);    
+    let qb = await this.repo.createQueryBuilder().where(whereQ);
+    const rslt = await paginate(qb, paginateOptions);
     return rslt;    
   }
 
