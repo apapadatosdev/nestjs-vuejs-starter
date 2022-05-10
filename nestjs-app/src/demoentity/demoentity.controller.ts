@@ -6,11 +6,13 @@ import { UpdateDemoentityDto } from './dto/update-demoentity.dto';
 
 import { AuthGuard } from '@nestjs/passport';
 import { AuthUser } from 'src/auth/AuthUser';
+import { Bunyan, ReqLogger } from 'nestjs-bunyan';
 
 @Controller('demoentity')
 //@UseGuards(JwtAuthGuard)
 export class DemoentityController {
   constructor(private readonly demoentityService: DemoentityService) {}
+  @ReqLogger() private readonly logger: Bunyan
 
   currentUser() : AuthUser  {
     return {
@@ -36,6 +38,7 @@ export class DemoentityController {
 
   @Get()
   async findAll() {
+    this.logger.info("info controller");
     const rslt = await this.demoentityService.findAll(this.currentUser(), null);
     return rslt;
   }

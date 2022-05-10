@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateDemoentityDto } from './dto/create-demoentity.dto';
 import { UpdateDemoentityDto } from './dto/update-demoentity.dto';
 
@@ -6,6 +6,7 @@ import { Between, MoreThanOrEqual, Not, Repository, Timestamp } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Demoentity } from './entities/demoentity.entity';
 import { AuthUser } from 'src/auth/AuthUser';
+import { Bunyan, InjectLogger } from 'nestjs-bunyan';
 
 @Injectable()
 export class DemoentityService {
@@ -13,6 +14,7 @@ export class DemoentityService {
     @InjectRepository(Demoentity)
     private readonly repo: Repository<Demoentity>
   ) {}
+  @InjectLogger() private readonly logger: Bunyan
 
   async create(createDemoentityDto: CreateDemoentityDto, user: AuthUser) {    
     const rslt = await this.repo.save({
@@ -26,6 +28,7 @@ export class DemoentityService {
   }
 
   async findAll(user: AuthUser, criteria: object) {
+    this.logger.info("info service");
     let whereQ = {};    
     // //transform criteria on TypeORM equivalent filter expressions
     //whereQ["field_decimal"] = Between(0, 100);
