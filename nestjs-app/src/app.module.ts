@@ -9,9 +9,6 @@ import { DemoentityModule } from './demoentity/demoentity.module';
 import  {LoggingBunyan}  from '@google-cloud/logging-bunyan';
 import { LogLevel } from 'bunyan';
 
-// Creates a Bunyan Cloud Logging client
-const loggingBunyan = new LoggingBunyan({projectId: "nest-monitoring-349716", keyFilename: "./google-logging.json",});
-
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), 
@@ -25,7 +22,16 @@ const loggingBunyan = new LoggingBunyan({projectId: "nest-monitoring-349716", ke
           // Log to the console at 'info' and above
           {stream: process.stdout, level: process.env.LOCAL_LOGGING_LEVEL as LogLevel},
           // And log to Cloud Logging, logging at 'info' and above
-          loggingBunyan.stream(process.env.CLOUD_LOGGING_LEVEL as LogLevel),
+          (
+            new LoggingBunyan(
+              {projectId: "nest-monitoring-349716",  
+              credentials: {
+                client_email: process.env.GOOGLE_CLOUD_SERVICE_CLIENT_EMAIL,
+                private_key: process.env.GOOGLE_CLOUD_SERVICE_PKEY,                
+              }
+            
+            })
+          ).stream(process.env.CLOUD_LOGGING_LEVEL as LogLevel),
         ],
       
       },
