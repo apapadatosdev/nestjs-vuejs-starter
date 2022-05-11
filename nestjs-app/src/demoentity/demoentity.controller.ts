@@ -5,9 +5,10 @@ import { CreateDemoentityDto } from './dto/create-demoentity.dto';
 import { UpdateDemoentityDto } from './dto/update-demoentity.dto';
 
 import { AuthGuard } from '@nestjs/passport';
-import { AuthUser } from 'src/auth/AuthUser';
+import { AuthUser } from 'src/auth/authuser.model';
 import { Bunyan, ReqLogger } from 'nestjs-bunyan';
 import { PaginateOptions, RequestCriteria } from 'src/core/pagination';
+import { EmailService } from 'src/core/email.service';
 
 @Controller('demoentity')
 //@UseGuards(JwtAuthGuard)
@@ -41,6 +42,9 @@ export class DemoentityController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async findAll(@Query() filter: RequestCriteria) {
     this.logger.info("info controller");    
+    const emailSvc = new EmailService();
+    //const rsltt = await emailSvc.sendEmail({to: "apapadatosdev@gmail.com", subject: "Some Subject", message: "Some Message", text_msg: "Some Text Message" });
+    //const rsltt = await emailSvc.sendAccountActivationEmail("apapadatosdev@gmail.com", "https://www.in.gr");
     filter.total = true;
     const rslt = await this.demoentityService.findAll(this.currentUser(), filter as PaginateOptions, filter);
     return rslt;

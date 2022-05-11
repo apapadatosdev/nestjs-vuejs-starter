@@ -10,6 +10,7 @@ import  {LoggingBunyan}  from '@google-cloud/logging-bunyan';
 import { LogLevel } from 'bunyan';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './core/http-exception-filter';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { HttpExceptionFilter } from './core/http-exception-filter';
       
       },
     }),
+    AuthModule,
     DemoentityModule],
   controllers: [AppController],
   providers: [
